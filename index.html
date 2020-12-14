@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <!-- Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.14/esri/css/main.css">
+    <script src="https://js.arcgis.com/4.16/"></script>
+    <script src="https://survey123.arcgis.com/api/jsapi"></script>
+    <title></title>
+    <style>
+        html,
+        body,
+        #survey123-webform {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="survey123-webform"></div>
+    <script>
+        require(["esri/tasks/QueryTask", "esri/tasks/support/Query", "esri/identity/IdentityManager"], 
+        function(QueryTask, Query) {
+            // Information about service for existing applications
+            var arr_svc_url = "https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/service_34d0e4d7a7e346759ad3775fe1f4e048/FeatureServer/0"
+            var arr_svc_column = "*"
+            var arr_svc_filter = "1=1"
+            var arr_form_field = "RecyclingID"
+            // ================================================================================
+
+            // Query to get all existing features
+            var arrQueryTask = new QueryTask({
+                url: arr_svc_url
+            });
+            var arrquery = new Query();
+            var arr_features = {};
+            arrquery.returnGeometry = false;
+            arrquery.outFields = [arr_svc_column];
+            arrquery.where = arr_svc_filter;
+            
+            arrQueryTask.execute(arrquery).then(function(list){
+
+                len = list.features.length
+                console.info("ARR list queried. Features queried: " + len)
+
+                for (i = 0; i < len; i++){
+                    rec_no = list.features[i].attributes['RecyclingID']
+                    arr_feature = {
+                        rid : rec_no
+                    }
+                    arr_features[rec_no] = arr_feature
+                }
+
+                const survey123WebForm = new Survey123WebForm({
+                    container: "survey123-webform",
+                    clientId: "YtfSRlC951X21CsC",
+                    portalUrl: "https://austin.maps.arcgis.com",
+                    itemId: "8ca15044e58b4031ac6202b688b3be30",
+                    onQuestionValueChanged: (v) => {
+                        // Event handler is called on any value change in any field. We are trying
+                        // to minimize the calls to bids.indexOf() and .setQuetionValue - that is why 
+                        // is_valid is maintained
+                        if (v.field == arr_form_field) {
+                            if (v.value.length == arr_value_length){
+                                if (v.value in arr_features) {
+                                    // var address = { "SingleLine" : fse_features[v.value]['bizStreetName'] + ", " + fse_features[v.value]['bizBoro'] + ", NY " + fse_features[v.value]['bizZip']}
+
+                                    console.info("ARR Number is valid.")
+                                    // console.info("FSE Info: " + v.value + " Name: " + fse_features[v.value]['restaurantName'])
+
+                                    // survey123WebForm.setQuestionValue(fsevalidation_field_valid)
+                                    // survey123WebForm.setQuestionValue({'restaurantName' : fse_features[v.value]['restaurantName']})
+                                    // survey123WebForm.setQuestionValue({'bizName' : fse_features[v.value]['bizName']})
+                                    // survey123WebForm.setQuestionValue({'bizDBA' : fse_features[v.value]['bizName']})
+                                    // survey123WebForm.setQuestionValue({'bizBldgNum' : fse_features[v.value]['bizBldgNum']})
+                                    // survey123WebForm.setQuestionValue({'bizStreetName' : fse_features[v.value]['bizStreetName']})
+                                    // survey123WebForm.setQuestionValue({'bizBoro' : fse_features[v.value]['bizBoro']})
+                                    // survey123WebForm.setQuestionValue({'bizZip' : fse_features[v.value]['bizZip']})
+
+                                } else {
+                                    console.info("ARR Number is not valid.")
+                                    // survey123WebForm.setQuestionValue(fsevalidation_field_invalid)
+                                } 
+                            }
+                        }
+                    }
+                });
+            });
+			
+        })
+    </script>
+</body>
+</html>
