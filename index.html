@@ -22,32 +22,6 @@
             width: 100%;
         }
     </style>
-    <script>
-            // Oauth Info
-            var client_id = "YtfSRlC951X21CsC";
-            var portal_url = "https://austin.maps.arcgis.com";
-            var info = new OAuthInfo({
-                appId : client_id,
-                popup : false
-            });
-
-            esriID.registerOAuthInfos([info]);
-            // send users to arcgis.com to login
-            on(dom.byId("sign-in"), "click", function() {
-                esriID.getCredential(portalUrl);
-            });
-
-            // log out and reload
-            on(dom.byId("sign-out"), "click", function() {
-                esriID.destroyCredentials();
-                window.location.reload();
-            });
-
-            esriID.checkSignInStatus(portalUrl).then(function() {
-            dom.byId('anonymousPanel').style.display = 'none';
-            dom.byId('personalizedPanel').style.display = 'block';
-            });
-    </script>
 </head>
 <body>
     <div id="anonymousPanel" style="display: block; padding: 5px; text-align: center;">
@@ -63,14 +37,8 @@
     <script>
         require(["esri/tasks/QueryTask", 
         "esri/tasks/support/Query", 
-        "esri/identity/IdentityManager", 
-        "esri/portal/Portal",
-        "esri/identity/OAuthInfo",
-        "dojo/dom-style",
-        "dojo/dom-attr",
-        "dojo/on",
-        "dojo/dom"], 
-        function(QueryTask, Query, esriID, Portal, OAuthInfo, domStyle, domAttr, on, dom) {
+        "esri/identity/IdentityManager"], 
+        function(QueryTask, Query) {
             // Information about service for existing applications
             var arr_svc_url = "https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/Austin_Recycling_Survey_for_December_Load_Data/FeatureServer/0"
             var arr_svc_column = "*"
