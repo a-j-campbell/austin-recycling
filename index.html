@@ -24,15 +24,58 @@
     </style>
 </head>
 <body>
+    <div id="anonymousPanel" style="display: block; padding: 5px; text-align: center;">
+        <span id="sign-in" class="action">Sign In</span> to see live traffic.
+    </div>
+    
+    <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center;">
+    Welcome <span id="userId" style="font-weight: bold;"></span> &nbsp;-&nbsp;
+        <span id="sign-out" class="action">Sign Out</span>
+    </div>
+
     <div id="survey123-webform"></div>
     <script>
-        require(["esri/tasks/QueryTask", "esri/tasks/support/Query", "esri/identity/IdentityManager"], 
-        function(QueryTask, Query) {
+        require(["esri/tasks/QueryTask", 
+        "esri/tasks/support/Query", 
+        "esri/identity/IdentityManager", 
+        "esri/portal/Portal",
+        "esri/identity/OAuthInfo",
+        "dojo/dom-style",
+        "dojo/dom-attr",
+        "dojo/on",
+        "dojo/dom"], 
+        function(QueryTask, Query, esriID, Portal, OAuthInfo, domStyle, domAttr, on, dom) {
             // Information about service for existing applications
-            var arr_svc_url = "https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/service_34d0e4d7a7e346759ad3775fe1f4e048/FeatureServer/0"
+            var arr_svc_url = "https://services.arcgis.com/0L95CJ0VTaxqcmED/arcgis/rest/services/Austin_Recycling_Survey_for_December_Load_Data/FeatureServer/0"
             var arr_svc_column = "*"
             var arr_svc_filter = "1=1"
+            var arr_value_length = 4
             var arr_form_field = "RecyclingID"
+
+            // Oauth Info
+            var client_id = "YtfSRlC951X21CsC";
+            var portal_url = "https://austin.maps.arcgis.com";
+            var info = new OAuthInfo({
+                appId : client_id,
+                popup : false
+            });
+
+            esriID.registerOAuthInfos([info]);
+            // send users to arcgis.com to login
+            on(dom.byId("sign-in"), "click", function() {
+                esriID.getCredential(portalUrl);
+            });
+
+            // log out and reload
+            on(dom.byId("sign-out"), "click", function() {
+                esriID.destroyCredentials();
+                window.location.reload();
+            });
+
+            esriID.checkSignInStatus(portalUrl).then(function() {
+            dom.byId('anonymousPanel').style.display = 'none';
+            dom.byId('personalizedPanel').style.display = 'block';
+            });
             // ================================================================================
 
             // Query to get all existing features
@@ -60,8 +103,8 @@
 
                 const survey123WebForm = new Survey123WebForm({
                     container: "survey123-webform",
-                    clientId: "YtfSRlC951X21CsC",
-                    portalUrl: "https://austin.maps.arcgis.com",
+                    clientId: client_id,
+                    portalUrl: portal_url,
                     itemId: "8ca15044e58b4031ac6202b688b3be30",
                     onQuestionValueChanged: (v) => {
                         // Event handler is called on any value change in any field. We are trying
