@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://js.arcgis.com/4.14/esri/css/main.css">
     <script src="https://js.arcgis.com/4.16/"></script>
     <script src="https://survey123.arcgis.com/api/jsapi"></script>
-    <title></title>
+    <title>Austin Recycling Form</title>
     <style>
         html,
         body,
@@ -22,6 +22,32 @@
             width: 100%;
         }
     </style>
+    <script>
+            // Oauth Info
+            var client_id = "YtfSRlC951X21CsC";
+            var portal_url = "https://austin.maps.arcgis.com";
+            var info = new OAuthInfo({
+                appId : client_id,
+                popup : false
+            });
+
+            esriID.registerOAuthInfos([info]);
+            // send users to arcgis.com to login
+            on(dom.byId("sign-in"), "click", function() {
+                esriID.getCredential(portalUrl);
+            });
+
+            // log out and reload
+            on(dom.byId("sign-out"), "click", function() {
+                esriID.destroyCredentials();
+                window.location.reload();
+            });
+
+            esriID.checkSignInStatus(portalUrl).then(function() {
+            dom.byId('anonymousPanel').style.display = 'none';
+            dom.byId('personalizedPanel').style.display = 'block';
+            });
+    </script>
 </head>
 <body>
     <div id="anonymousPanel" style="display: block; padding: 5px; text-align: center;">
@@ -51,31 +77,6 @@
             var arr_svc_filter = "1=1"
             var arr_value_length = 4
             var arr_form_field = "RecyclingID"
-
-            // Oauth Info
-            var client_id = "YtfSRlC951X21CsC";
-            var portal_url = "https://austin.maps.arcgis.com";
-            var info = new OAuthInfo({
-                appId : client_id,
-                popup : false
-            });
-
-            esriID.registerOAuthInfos([info]);
-            // send users to arcgis.com to login
-            on(dom.byId("sign-in"), "click", function() {
-                esriID.getCredential(portalUrl);
-            });
-
-            // log out and reload
-            on(dom.byId("sign-out"), "click", function() {
-                esriID.destroyCredentials();
-                window.location.reload();
-            });
-
-            esriID.checkSignInStatus(portalUrl).then(function() {
-            dom.byId('anonymousPanel').style.display = 'none';
-            dom.byId('personalizedPanel').style.display = 'block';
-            });
             // ================================================================================
 
             // Query to get all existing features
